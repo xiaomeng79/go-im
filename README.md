@@ -1,1 +1,1 @@
-## go-im
+## go-im [![Build Status](https://travis-ci.org/xiaomeng79/go-im.svg?branch=master)](https://travis-ci.org/xiaomeng79/go-im)
