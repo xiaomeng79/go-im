@@ -8,7 +8,7 @@ env:
   - GO111MODULE=on
 
 before_install:
-  - go get github.com/gorilla/websocket
+#  - go get github.com/gorilla/websocket
 #- if ! go get code.google.com/p/go.tools/cmd/cover; then go get golang.org/x/tools/cmd/cover; fi
 
 script:

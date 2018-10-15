@@ -64,6 +64,12 @@ func initWsConn(con *websocket.Conn) *wsConn {
 		outChan:   make(chan *wsMessage, 1024),
 		closeChan: make(chan struct{}, 1),
 	}
+	//设置关闭函数
+	wc.conn.SetCloseHandler(func(code int, text string) error {
+		fmt.Println("client close")
+		wc.closeChan <-struct {}{}
+		return nil
+	})
 	wc.add() //增加对应关系
 	return wc
 
@@ -71,13 +77,13 @@ func initWsConn(con *websocket.Conn) *wsConn {
 
 //读取连接信息，写入缓存
 func (ws *wsConn) read(ctx context.Context) {
-
 	for {
 		mtp, mdata, err := ws.conn.ReadMessage()
 		if err != nil {
 			fmt.Println(err.Error())
+			ws.conn.WriteMessage(websocket.CloseMessage,[]byte("read error")) //关闭连接
 			ws.closeChan <- struct{}{}
-			panic("read message error")
+			fmt.Println("read message error")
 			return
 		}
 		//TODO:判断消息是否阻塞，丢弃或者做其他处理
@@ -87,7 +93,7 @@ func (ws *wsConn) read(ctx context.Context) {
 			messageType: mtp,
 			data:        mdata,
 		}
-		//测试发送回去
+		//TODO:测试发送回去,使用的时候删除
 		ws.outChan <- &wsMessage{
 			messageType: mtp,
 			data:        mdata,
@@ -110,8 +116,9 @@ func (ws *wsConn) write(ctx context.Context) {
 		case msg := <-ws.outChan:
 			err := ws.conn.WriteMessage(msg.messageType, msg.data)
 			if err != nil {
+				ws.conn.WriteMessage(websocket.CloseMessage,[]byte("write error")) //关闭连接
 				ws.closeChan <- struct{}{}
-				panic("write message error")
+				fmt.Println("write message error")
 				return
 			}
 		case <-ctx.Done():
