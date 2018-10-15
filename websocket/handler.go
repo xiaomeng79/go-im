@@ -2,11 +2,23 @@ package ws
 
 import (
 	"context"
+	"html/template"
 	"log"
 	"net/http"
 )
 
 //对外的API
+//获取客户端页面
+func ClientHandler(w http.ResponseWriter, r *http.Request) {
+	s, err := Asset("websocket/client.html")
+	if err != nil {
+		return
+	}
+
+	tmpl := template.New("client")
+	tmpl.Parse(string(s))
+	tmpl.Execute(w, "ws client")
+}
 
 //单独推送消息
 func PushHandler(w http.ResponseWriter, r *http.Request) {

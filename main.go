@@ -7,6 +7,8 @@ import (
 )
 
 func main() {
+
+	http.HandleFunc("/", ws.ClientHandler)
 	http.HandleFunc("/ws", ws.WSHandler)
 	http.HandleFunc("/push", ws.PushHandler)
 	http.HandleFunc("/broad", ws.BroadcastHandler)

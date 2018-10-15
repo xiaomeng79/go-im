@@ -15,3 +15,8 @@ fmt :
 test :
 	@echo "测试代码"
 	@go test -v ./...
+
+.PHONY : bindata
+bindata :
+	@echo "打包"
+	@go-bindata -o ./websocket/client.go -pkg="ws" ./websocket/client.html
